@@ -41,7 +41,8 @@ mapua-library-billing/
 │
 └── README.md
 ```
-
+```
 cd backend
 venv\Scripts\activate
 python manage.py runserver
+```
