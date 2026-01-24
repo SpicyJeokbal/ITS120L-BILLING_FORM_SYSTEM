@@ -1,0 +1,88 @@
+<!-- frontend/templates/dashboard.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapua Library - Billing Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <!-- Include Sidebar -->
+    {% include 'includes/sidebar.html' %}
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Value" id="searchInput">
+            <button class="filter-btn">⚙</button>
+        </div>
+
+        <!-- Board -->
+        <div class="board">
+            <!-- In Progress Column -->
+            <div class="column">
+                <div class="column-header">
+                    <div class="column-title-group">
+                        <div class="column-title">IN PROGRESS</div>
+                        <div class="column-count">{{ in_progress.count }}</div>
+                    </div>
+                    <button class="add-card-btn">+</button>
+                </div>
+                <div class="drop-zone" data-status="in_progress">
+                    {% for item in in_progress %}
+                    <div class="card" draggable="true" data-id="{{ item.id }}">
+                        <div class="card-header">
+                            <div class="card-title">{{ item.title }}</div>
+                            <div class="card-menu">⋯</div>
+                        </div>
+                        <div class="card-info">
+                            <span>{{ item.member_name }}</span>
+                            <span>{{ item.member_id }}</span>
+                            <span>{{ item.due_date|date:"m/d/Y" }}</span>
+                        </div>
+                        <span class="card-tag tag-{{ item.tag_type|lower }}">{{ item.tag_type }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Done Column -->
+            <div class="column">
+                <div class="column-header">
+                    <div class="column-title-group">
+                        <div class="column-title">DONE</div>
+                        <div class="column-count">{{ done.count }}</div>
+                    </div>
+                    <button class="add-card-btn">+</button>
+                </div>
+                <div class="drop-zone" data-status="done">
+                    {% for item in done %}
+                    <div class="card" draggable="true" data-id="{{ item.id }}">
+                        <div class="card-header">
+                            <div class="card-title">{{ item.title }}</div>
+                            <div class="card-menu">⋯</div>
+                        </div>
+                        <div class="card-info">
+                            <span>{{ item.member_name }}</span>
+                            <span>{{ item.member_id }}</span>
+                            <span>{{ item.due_date|date:"m/d/Y" }}</span>
+                        </div>
+                        <span class="card-tag tag-{{ item.tag_type|lower }}">{{ item.tag_type }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Add New Column Button -->
+            <div class="add-column-container">
+                <button class="add-column-btn">+</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>
