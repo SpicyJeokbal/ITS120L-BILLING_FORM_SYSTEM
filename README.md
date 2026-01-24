@@ -42,7 +42,22 @@ mapua-library-billing/
 └── README.md
 ```
 ```
+# Requirements
+- Python 3.10+
+- Django (will be installed via requirements.txt)
+
+# First-time setup
+cd backend
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
+
+# If you closed the terminal or deactivated the venv
 cd backend
 venv\Scripts\activate
 python manage.py runserver
+
+
 ```
