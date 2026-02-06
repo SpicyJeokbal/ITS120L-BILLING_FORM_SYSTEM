@@ -12,22 +12,26 @@ mapua-library-billing/
 │   │   └── wsgi.py
 │   │
 │   ├── billing/                     # Main app
-│   │   ├── models.py
+│   │   ├── supabase_client.py
 │   │   ├── views.py
 │   │   ├── urls.py
-│   │   ├── admin.py
 │   │   └── migrations/
 │   │
 │   └── media/                       # User uploads
-│       └── avatars/
+│   │   └── avatars/
+│   └── manage.py
+│   └── requirements.txt
 │
 ├── frontend/                        # Frontend
 │   │
 │   ├── static/                      # CSS, JS, Images
 │   │   ├── css/
-│   │   │   └── style.css
+│   │   │   └── style.css            # Dashboard
+│   │   │   └── login.css
 │   │   ├── js/
-│   │   │   └── main.js
+│   │   │   └── main.js              # Dashboard
+│   │   │   └── login.js 
+│   │   │   └── register.js 
 │   │   └── images/
 │   │       ├── mapua-logo.png
 │   │       └── icons/
@@ -36,6 +40,7 @@ mapua-library-billing/
 │       ├── base.html
 │       ├── dashboard.html
 │       ├── login.html
+│       ├── register.html
 │       └── includes/
 │           └── sidebar.html
 │
