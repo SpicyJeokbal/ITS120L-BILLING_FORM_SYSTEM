@@ -27,6 +27,17 @@ class SupabaseClient:
             return response.json()
         return []
     
+    def get_item_by_id(self, item_id):
+        """Get a single billing item by ID"""
+        endpoint = f"{self.url}/rest/v1/billing_items"
+        params = {'id': f'eq.{item_id}'}
+        
+        response = requests.get(endpoint, headers=self.headers, params=params)
+        if response.status_code == 200:
+            items = response.json()
+            return items[0] if items else None
+        return None
+    
     def create_item(self, data):
         """Create a new billing item"""
         endpoint = f"{self.url}/rest/v1/billing_items"
