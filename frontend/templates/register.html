@@ -117,20 +117,25 @@
     </div>
 
     <script src="{% static 'js/register.js' %}"></script>
+   
     <script>
         // Show error/success message from Django
         {% if messages %}
             {% for message in messages %}
-                const errorMessage = document.getElementById('errorMessage');
                 errorMessage.textContent = '{{ message }}';
                 errorMessage.classList.add('show');
                 {% if message.tags == 'success' %}
                     errorMessage.style.background = '#d4edda';
                     errorMessage.style.border = '1px solid #c3e6cb';
                     errorMessage.style.color = '#155724';
+                {% else %}
+                    errorMessage.style.background = '#fee';
+                    errorMessage.style.border = '1px solid #fcc';
+                    errorMessage.style.color = '#c33';
                 {% endif %}
             {% endfor %}
         {% endif %}
     </script>
+
 </body>
 </html>
