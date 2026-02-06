@@ -70,6 +70,10 @@ registerForm.addEventListener('submit', function(e) {
         showError('Password must be at least 8 characters long.');
         return;
     }
+    
+    // ADD THIS: If all validations pass, let the form submit!
+    // No e.preventDefault() here, so form submits normally
+    console.log('Form validation passed, submitting...');
 });
 
 function showError(message) {
