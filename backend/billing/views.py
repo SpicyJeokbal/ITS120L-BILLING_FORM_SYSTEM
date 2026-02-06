@@ -14,6 +14,13 @@ import json
 import re
 
 def login_page(request):
+
+    """Login page view with security"""
+    print("\n=== LOGIN PAGE DEBUG ===")
+    print(f"Request method: {request.method}")
+    print(f"User authenticated: {request.user.is_authenticated}")
+    print(f"Session key: {request.session.session_key}")
+
     """Login page view with security"""
     if request.user.is_authenticated:
         return redirect('dashboard')
@@ -43,6 +50,10 @@ def login_page(request):
     return render(request, 'login.html')
 
 def register_page(request):
+
+    print("=== REGISTER VIEW CALLED ===")
+    print(f"Method: {request.method}")
+
     """Registration page view with security"""
     if request.user.is_authenticated:
         return redirect('dashboard')
