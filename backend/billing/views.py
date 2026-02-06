@@ -186,7 +186,7 @@ def update_status(request):
 @csrf_exempt
 @require_POST
 def create_item(request):
-    """Create new billing item"""
+    """Create new billing item (legacy endpoint)"""
     try:
         data = json.loads(request.body)
         
@@ -206,3 +206,157 @@ def create_item(request):
             return JsonResponse({'success': False, 'message': 'Creation failed'}, status=400)
     except Exception as e:
         return JsonResponse({'success': False, 'message': str(e)}, status=400)
+
+@csrf_exempt
+@require_POST
+def create_billing(request):
+    """Create new billing/charge form"""
+    try:
+        # Parse request data
+        data = json.loads(request.body)
+        print(f"\n=== CREATE BILLING DEBUG ===")
+        print(f"Received data: {json.dumps(data, indent=2)}")
+        
+        # Validate required fields
+        required_fields = ['name', 'student_no', 'program', 'term', 'items', 'total']
+        missing_fields = [field for field in required_fields if not data.get(field)]
+        
+        if missing_fields:
+            error_msg = f"Missing required fields: {', '.join(missing_fields)}"
+            print(f"ERROR: {error_msg}")
+            return JsonResponse({'success': False, 'message': error_msg}, status=400)
+        
+        # Get items
+        items = data.get('items', [])
+        if not items:
+            return JsonResponse({'success': False, 'message': 'No items provided'}, status=400)
+        
+        # For now, we'll use the first item's details
+        # Later you can modify this to handle multiple items differently
+        first_item = items[0]
+        
+        # Calculate total from all items
+        total_amount = sum(item['quantity'] * item['amount'] for item in items)
+        
+        # Build items description
+        items_description = ', '.join([f"{item['description']} (x{item['quantity']})" for item in items])
+        
+        # Create billing data matching your Supabase table structure
+        billing_data = {
+            'name': data.get('name'),
+            'student_no': data.get('student_no'),
+            'program_year': data.get('program'),  # Maps to program_year column
+            'term': data.get('term'),
+            'school_year': data.get('academic_year') or '2025-2026',  # Maps to school_year column
+            'date': data.get('date'),  # Should be in YYYY-MM-DD format
+            'quantity': first_item.get('quantity', 1),
+            'description': items_description,  # Combined description of all items
+            'amount': first_item.get('amount', 0),
+            'total': total_amount,
+            'status': data.get('status', 'in_progress'),
+            'charged_by': data.get('charged_by'),
+        }
+        
+        print(f"Billing data to save: {json.dumps(billing_data, indent=2)}")
+        
+        # Create in Supabase
+        item = supabase_client.create_item(billing_data)
+        
+        if item:
+            print(f"Successfully created item with ID: {item.get('id')}")
+            
+            # Log the activity
+            try:
+                username = request.user.username if request.user.is_authenticated else 'anonymous'
+                supabase_client.log_user_activity(username, 'create_billing')
+            except Exception as log_error:
+                print(f"Warning: Could not log activity: {str(log_error)}")
+            
+            return JsonResponse({'success': True, 'item_id': item.get('id')})
+        else:
+            print("ERROR: Supabase create_item returned None")
+            return JsonResponse({'success': False, 'message': 'Failed to create item in database'}, status=400)
+            
+    except json.JSONDecodeError as e:
+        error_msg = f"Invalid JSON data: {str(e)}"
+        print(f"ERROR: {error_msg}")
+        return JsonResponse({'success': False, 'message': error_msg}, status=400)
+    except Exception as e:
+        error_msg = f"Server error: {str(e)}"
+        print(f"ERROR: {error_msg}")
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'success': False, 'message': error_msg}, status=500)
+
+@login_required(login_url='login')
+def get_billing(request, item_id):
+    """Get a single billing item by ID"""
+    try:
+        print(f"\n=== GET BILLING DEBUG ===")
+        print(f"Fetching item ID: {item_id}")
+        
+        # Get item from Supabase
+        item = supabase_client.get_item_by_id(item_id)
+        
+        if item:
+            print(f"Successfully fetched item: {item.get('id')}")
+            return JsonResponse({'success': True, 'item': item})
+        else:
+            print(f"ERROR: Item not found with ID: {item_id}")
+            return JsonResponse({'success': False, 'message': 'Item not found'}, status=404)
+            
+    except Exception as e:
+        error_msg = f"Server error: {str(e)}"
+        print(f"ERROR: {error_msg}")
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'success': False, 'message': error_msg}, status=500)
+    
+@login_required(login_url='login')
+def students_page(request):
+    """Students management page"""
+    return render(request, 'students.html')
+
+@login_required(login_url='login')
+def fees_page(request):
+    """Fees and violations management page"""
+    return render(request, 'fees.html')
+
+@login_required(login_url='login')
+def logs_page(request):
+    """Activity logs page"""
+    return render(request, 'logs.html')
+
+@login_required(login_url='login')
+def archive_page(request):
+    """Archive page for old billing forms"""
+    return render(request, 'archive.html')
+
+@csrf_exempt
+@require_POST
+def upload_students(request):
+    """Upload students from Excel file"""
+    return JsonResponse({'success': False, 'message': 'Not implemented yet'})
+
+@csrf_exempt
+@require_POST
+def add_student(request):
+    """Add a single student manually"""
+    return JsonResponse({'success': False, 'message': 'Not implemented yet'})
+
+@csrf_exempt
+def get_student(request):
+    """Get student info by student number"""
+    return JsonResponse({'success': False, 'message': 'Not implemented yet'})
+
+@csrf_exempt
+@require_POST
+def add_fee(request):
+    """Add a fee or violation"""
+    return JsonResponse({'success': False, 'message': 'Not implemented yet'})
+
+@csrf_exempt
+@require_POST
+def delete_fee(request):
+    """Delete a fee or violation"""
+    return JsonResponse({'success': False, 'message': 'Not implemented yet'})
