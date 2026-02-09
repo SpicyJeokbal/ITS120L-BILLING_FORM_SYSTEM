@@ -14,14 +14,12 @@ import json
 import re
 
 def login_page(request):
-
     """Login page view with security"""
     print("\n=== LOGIN PAGE DEBUG ===")
     print(f"Request method: {request.method}")
     print(f"User authenticated: {request.user.is_authenticated}")
     print(f"Session key: {request.session.session_key}")
 
-    """Login page view with security"""
     if request.user.is_authenticated:
         return redirect('dashboard')
     
@@ -39,8 +37,10 @@ def login_page(request):
         if user is not None:
             login(request, user)
             
-            # Log the user activity in Supabase
-            supabase_client.log_user_activity(user.username, 'login')
+            # Log the user activity in Supabase with details
+            full_name = user.first_name or username
+            log_details = f"{full_name} logged in successfully"
+            supabase_client.log_user_activity(user.username, 'login', log_details)
             
             return redirect('dashboard')
         else:
@@ -50,7 +50,6 @@ def login_page(request):
     return render(request, 'login.html')
 
 def register_page(request):
-
     print("=== REGISTER VIEW CALLED ===")
     print(f"Method: {request.method}")
 
@@ -131,6 +130,10 @@ def register_page(request):
                 'created_at': user.date_joined.isoformat()
             })
             
+            # Log the registration
+            log_details = f"New user registered: {full_name} ({email})"
+            supabase_client.log_user_activity(username, 'register', log_details)
+            
             messages.success(request, 'Account created successfully! Please login.')
             return redirect('login')
             
@@ -143,9 +146,11 @@ def register_page(request):
 def logout_view(request):
     """Logout view with activity logging"""
     username = request.user.username if request.user.is_authenticated else 'unknown'
+    full_name = request.user.first_name if request.user.is_authenticated else username
     
-    # Log logout activity
-    supabase_client.log_user_activity(username, 'logout')
+    # Log logout activity with details
+    log_details = f"{full_name} logged out"
+    supabase_client.log_user_activity(username, 'logout', log_details)
     
     logout(request)
     messages.success(request, 'You have been logged out successfully.')
@@ -173,10 +178,31 @@ def update_status(request):
         item_id = data.get('item_id')
         new_status = data.get('status')
         
+        # Get the item first to get details for logging
+        item = supabase_client.get_item_by_id(item_id)
+        
         # Update in Supabase
         success = supabase_client.update_item(item_id, {'status': new_status})
         
         if success:
+            # Log the activity with details
+            try:
+                username = request.user.username if request.user.is_authenticated else 'anonymous'
+                if item:
+                    student_name = item.get('name', 'Unknown')
+                    student_no = item.get('student_no', 'N/A')
+                    log_details = f"Updated charge form #{item_id} status to '{new_status}' for {student_name} (Student No: {student_no})"
+                else:
+                    log_details = f"Updated charge form #{item_id} status to '{new_status}'"
+                
+                supabase_client.log_user_activity(
+                    username=username,
+                    activity_type='update_billing',
+                    details=log_details
+                )
+            except Exception as log_error:
+                print(f"Warning: Could not log activity: {str(log_error)}")
+            
             return JsonResponse({'success': True})
         else:
             return JsonResponse({'success': False, 'message': 'Update failed'}, status=400)
@@ -232,7 +258,6 @@ def create_billing(request):
             return JsonResponse({'success': False, 'message': 'No items provided'}, status=400)
         
         # For now, we'll use the first item's details
-        # Later you can modify this to handle multiple items differently
         first_item = items[0]
         
         # Calculate total from all items
@@ -245,12 +270,12 @@ def create_billing(request):
         billing_data = {
             'name': data.get('name'),
             'student_no': data.get('student_no'),
-            'program_year': data.get('program'),  # Maps to program_year column
+            'program_year': data.get('program'),
             'term': data.get('term'),
-            'school_year': data.get('academic_year') or '2025-2026',  # Maps to school_year column
-            'date': data.get('date'),  # Should be in YYYY-MM-DD format
+            'school_year': data.get('academic_year') or '2025-2026',
+            'date': data.get('date'),
             'quantity': first_item.get('quantity', 1),
-            'description': items_description,  # Combined description of all items
+            'description': items_description,
             'amount': first_item.get('amount', 0),
             'total': total_amount,
             'status': data.get('status', 'in_progress'),
@@ -263,16 +288,28 @@ def create_billing(request):
         item = supabase_client.create_item(billing_data)
         
         if item:
-            print(f"Successfully created item with ID: {item.get('id')}")
+            item_id = item.get('id')
+            print(f"Successfully created item with ID: {item_id}")
             
-            # Log the activity
+            # Log the activity with detailed information
             try:
                 username = request.user.username if request.user.is_authenticated else 'anonymous'
-                supabase_client.log_user_activity(username, 'create_billing')
+                student_name = data.get('name')
+                student_no = data.get('student_no')
+                charge_number = data.get('charge_number', item_id)
+                
+                # Create detailed log message
+                log_details = f"Created charge form #{charge_number} for {student_name} (Student No: {student_no}) - Total: ₱{total_amount:.2f} - Items: {items_description}"
+                
+                supabase_client.log_user_activity(
+                    username=username,
+                    activity_type='create_billing',
+                    details=log_details
+                )
             except Exception as log_error:
                 print(f"Warning: Could not log activity: {str(log_error)}")
             
-            return JsonResponse({'success': True, 'item_id': item.get('id')})
+            return JsonResponse({'success': True, 'item_id': item_id})
         else:
             print("ERROR: Supabase create_item returned None")
             return JsonResponse({'success': False, 'message': 'Failed to create item in database'}, status=400)
@@ -326,6 +363,23 @@ def fees_page(request):
 def logs_page(request):
     """Activity logs page"""
     return render(request, 'logs.html')
+
+@login_required(login_url='login')
+def logs_api(request):
+    """API endpoint to get activity logs from Supabase"""
+    try:
+        # Get logs from Supabase
+        logs = supabase_client.get_all_logs()
+        
+        return JsonResponse({
+            'success': True,
+            'logs': logs
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': str(e)
+        }, status=500)
 
 @login_required(login_url='login')
 def archive_page(request):
