@@ -670,3 +670,243 @@ body {
     background-color: #f9f9f9;
     color: #666;
 }
+
+/* =================== DASHBOARD HEADER WITH USER PROFILE =================== */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    background: white;
+    border-bottom: 2px solid #f4f5f7;
+    margin-bottom: 24px;
+}
+
+.header-left h1 {
+    font-size: 24px;
+    color: #172b4d;
+    margin: 0 0 4px 0;
+    font-weight: 600;
+}
+
+.dashboard-subtitle {
+    font-size: 14px;
+    color: #5e6c84;
+    margin: 0;
+}
+
+/* =================== USER PROFILE HEADER =================== */
+.user-profile-header {
+    position: relative;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    background: white;
+    border: 2px solid #dfe1e6;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 200px;
+}
+
+.user-info:hover {
+    background: #f4f5f7;
+    border-color: #0052cc;
+}
+
+.user-info.active {
+    border-color: #0052cc;
+    background: #deebff;
+}
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0052cc, #0065ff);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+}
+
+.user-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #172b4d;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-role {
+    font-size: 11px;
+    color: #5e6c84;
+    text-transform: capitalize;
+}
+
+.dropdown-arrow {
+    color: #5e6c84;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+}
+
+.user-info.active .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+/* =================== USER DROPDOWN MENU =================== */
+.user-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    background: white;
+    border: 2px solid #dfe1e6;
+    border-radius: 3px;
+    box-shadow: 0 8px 16px rgba(9, 30, 66, 0.25);
+    min-width: 260px;
+    display: none;
+    z-index: 100;
+}
+
+.user-dropdown-menu.active {
+    display: block;
+}
+
+.dropdown-header {
+    padding: 16px;
+    background: #f4f5f7;
+}
+
+.dropdown-user-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #172b4d;
+    margin-bottom: 4px;
+    word-wrap: break-word;
+}
+
+.dropdown-user-email {
+    font-size: 12px;
+    color: #5e6c84;
+    word-wrap: break-word;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: #dfe1e6;
+    margin: 4px 0;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    color: #172b4d;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.dropdown-item:hover {
+    background: #f4f5f7;
+}
+
+.dropdown-item svg {
+    color: #5e6c84;
+    flex-shrink: 0;
+}
+
+.dropdown-item-danger {
+    color: #de350b;
+}
+
+.dropdown-item-danger svg {
+    color: #de350b;
+}
+
+.dropdown-item-danger:hover {
+    background: #ffebe6;
+}
+
+/* =================== SETTINGS MODAL =================== */
+.modal-settings {
+    max-width: 600px;
+}
+
+.settings-tabs {
+    display: flex;
+    gap: 8px;
+    border-bottom: 2px solid #f4f5f7;
+    margin-bottom: 24px;
+}
+
+.settings-tab {
+    padding: 12px 20px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-size: 14px;
+    font-weight: 600;
+    color: #5e6c84;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.settings-tab:hover {
+    color: #172b4d;
+    background: #f4f5f7;
+}
+
+.settings-tab.active {
+    color: #0052cc;
+    border-bottom-color: #0052cc;
+}
+
+.settings-tab-content {
+    display: none;
+}
+
+.settings-tab-content.active {
+    display: block;
+}
+
+/* =================== RESPONSIVE =================== */
+@media (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .user-profile-header {
+        width: 100%;
+    }
+
+    .user-info {
+        width: 100%;
+    }
+
+    .user-dropdown-menu {
+        left: 0;
+        right: 0;
+        width: 100%;
+    }
+}
