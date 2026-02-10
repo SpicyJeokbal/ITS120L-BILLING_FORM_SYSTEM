@@ -51,10 +51,13 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'billing.context_processors.user_role',
             ],
         },
     },
 ]
+
+
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
@@ -124,3 +127,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Add this after DATABASES
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
+# Authentication Backends
+AUTHENTICATION_BACKENDS = [
+    'billing.auth_backend.SupabaseAuthBackend',  # Primary: Supabase
+    'django.contrib.auth.backends.ModelBackend',  # Fallback: Django
+]
+
