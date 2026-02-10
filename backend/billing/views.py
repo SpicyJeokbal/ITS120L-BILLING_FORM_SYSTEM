@@ -10,6 +10,8 @@ from django.contrib import messages
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from .supabase_client import supabase_client
+from django.contrib.auth import authenticate, update_session_auth_hash
+import hashlib
 import json
 import re
 
@@ -49,6 +51,30 @@ def login_page(request):
     
     return render(request, 'login.html')
 
+@login_required(login_url='login')
+def check_user_role(request):
+    """API endpoint to check current user's role"""
+    try:
+        user_profile = supabase_client.get_user_by_username(request.user.username)
+        
+        if user_profile:
+            return JsonResponse({
+                'success': True,
+                'role': user_profile.get('role', 'librarian'),
+                'status': user_profile.get('status', 'active'),
+                'can_access': user_profile.get('can_access', True)
+            })
+        else:
+            return JsonResponse({
+                'success': False,
+                'role': 'librarian'
+            })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': str(e)
+        }, status=500)
+
 def register_page(request):
     print("=== REGISTER VIEW CALLED ===")
     print(f"Method: {request.method}")
@@ -85,12 +111,12 @@ def register_page(request):
         if not re.match(r'^[a-zA-Z0-9_]{4,20}$', username):
             errors.append('Username must be 4-20 characters (letters, numbers, underscore only).')
         
-        # Check if username already exists
-        if User.objects.filter(username=username).exists():
+        # Check if username already exists in Supabase
+        if supabase_client.get_user_by_username(username):
             errors.append('Username already taken.')
         
-        # Check if email already exists
-        if User.objects.filter(email=email).exists():
+        # Check if email already exists in Supabase
+        if supabase_client.get_user_by_email(email):
             errors.append('Email already registered.')
         
         # Password validation
@@ -115,6 +141,11 @@ def register_page(request):
         
         # Create user
         try:
+            # Hash the password
+            import hashlib
+            password_hash = hashlib.sha256(password.encode()).hexdigest()
+            
+            # Create Django user (still needed for sessions)
             user = User.objects.create_user(
                 username=username,
                 email=email,
@@ -122,11 +153,12 @@ def register_page(request):
                 first_name=full_name
             )
             
-            # Store user info in Supabase
+            # Store user info in Supabase with password hash
             supabase_client.create_user_profile({
                 'username': username,
                 'email': email,
                 'full_name': full_name,
+                'password_hash': password_hash,
                 'created_at': user.date_joined.isoformat()
             })
             
@@ -155,6 +187,167 @@ def logout_view(request):
     logout(request)
     messages.success(request, 'You have been logged out successfully.')
     return redirect('login')
+
+
+@csrf_exempt
+@require_POST
+@login_required(login_url='login')
+def update_profile(request):
+    """Update user profile (name and email)"""
+    try:
+        data = json.loads(request.body)
+        full_name = data.get('full_name')
+        email = data.get('email')
+        
+        if not full_name or not email:
+            return JsonResponse({
+                'success': False,
+                'message': 'Full name and email are required'
+            }, status=400)
+        
+        # Validate email format (Mapua email)
+        if not email.endswith('@mymail.mapua.edu.ph'):
+            return JsonResponse({
+                'success': False,
+                'message': 'Email must be a valid Mapua email (@mymail.mapua.edu.ph)'
+            }, status=400)
+        
+        # Check if email is already taken by another user
+        existing_user = supabase_client.get_user_by_email(email)
+        if existing_user and existing_user.get('username') != request.user.username:
+            return JsonResponse({
+                'success': False,
+                'message': 'Email already registered to another user'
+            }, status=400)
+        
+        # Update Django User
+        request.user.first_name = full_name
+        request.user.email = email
+        request.user.save()
+        
+        # Update Supabase user_profiles
+        endpoint = f"{supabase_client.url}/rest/v1/user_profiles"
+        params = {'username': f'eq.{request.user.username}'}
+        update_data = {
+            'full_name': full_name,
+            'email': email,
+            'updated_at': datetime.now().isoformat()
+        }
+        
+        response = requests.patch(
+            endpoint, 
+            headers=supabase_client.headers, 
+            params=params, 
+            json=update_data
+        )
+        
+        if response.status_code in [200, 204]:
+            # Log the activity
+            log_details = f"Updated profile: name={full_name}, email={email}"
+            supabase_client.log_user_activity(
+                username=request.user.username,
+                activity_type='update_profile',
+                details=log_details
+            )
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Profile updated successfully'
+            })
+        else:
+            return JsonResponse({
+                'success': False,
+                'message': 'Failed to update profile in database'
+            }, status=500)
+            
+    except Exception as e:
+        print(f"Error updating profile: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'message': str(e)
+        }, status=500)
+
+
+@csrf_exempt
+@require_POST
+@login_required(login_url='login')
+def change_password(request):
+    """Change user password"""
+    try:
+        data = json.loads(request.body)
+        current_password = data.get('current_password')
+        new_password = data.get('new_password')
+        
+        if not current_password or not new_password:
+            return JsonResponse({
+                'success': False,
+                'message': 'Current and new password are required'
+            }, status=400)
+        
+        # Validate new password strength
+        if len(new_password) < 8:
+            return JsonResponse({
+                'success': False,
+                'message': 'New password must be at least 8 characters'
+            }, status=400)
+        
+        # Verify current password
+        user = authenticate(username=request.user.username, password=current_password)
+        if not user:
+            return JsonResponse({
+                'success': False,
+                'message': 'Current password is incorrect'
+            }, status=400)
+        
+        # Update Django User password
+        request.user.set_password(new_password)
+        request.user.save()
+        
+        # Update session to prevent logout
+        update_session_auth_hash(request, request.user)
+        
+        # Update Supabase user_profiles password_hash
+        password_hash = hashlib.sha256(new_password.encode()).hexdigest()
+        endpoint = f"{supabase_client.url}/rest/v1/user_profiles"
+        params = {'username': f'eq.{request.user.username}'}
+        update_data = {
+            'password_hash': password_hash,
+            'updated_at': datetime.now().isoformat()
+        }
+        
+        response = requests.patch(
+            endpoint, 
+            headers=supabase_client.headers, 
+            params=params, 
+            json=update_data
+        )
+        
+        if response.status_code in [200, 204]:
+            # Log the activity
+            log_details = "Changed account password"
+            supabase_client.log_user_activity(
+                username=request.user.username,
+                activity_type='change_password',
+                details=log_details
+            )
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Password changed successfully'
+            })
+        else:
+            return JsonResponse({
+                'success': False,
+                'message': 'Failed to update password in database'
+            }, status=500)
+            
+    except Exception as e:
+        print(f"Error changing password: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'message': str(e)
+        }, status=500)
+
 
 @login_required(login_url='login')
 def dashboard(request):
