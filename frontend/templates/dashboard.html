@@ -15,68 +15,177 @@
     <!-- Main Content -->
     <div class="main-content">
 
+        
         <div class="dashboard-header">
             <div class="header-left">
                 <h1>Dashboard</h1>
-                <p class="dashboard-subtitle">Welcome back, {{ user.first_name|default:user.username }}!</p>
             </div>
             
-            <!-- USER PROFILE HEADER - ADD THIS -->
-            <div class="user-profile-header">
-                <div class="user-info" id="userProfileDropdown">
-                    <div class="user-avatar">
-                        {{ user.first_name.0|upper|default:user.username.0|upper }}
-                    </div>
-                    <div class="user-details">
-                        <div class="user-name">{{ user.first_name|default:user.username }}</div>
-                        <div class="user-role">{{ user_role|title|default:"Librarian" }}</div>
-                    </div>
-                    <svg class="dropdown-arrow" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+            <!-- CENTERED SEARCH BAR -->
+            <div class="header-center">
+                <div class="search-bar-inline">
+                    <svg class="search-icon" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                     </svg>
-                </div>
-                
-                <div class="user-dropdown-menu" id="userDropdownMenu">
-                    <div class="dropdown-header">
-                        <div class="dropdown-user-name">{{ user.first_name|default:user.username }}</div>
-                        <div class="dropdown-user-email">{{ user.email }}</div>
-                    </div>
-                    <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item" onclick="openSettingsModal(); return false;">
-                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
-                            <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319z"/>
-                        </svg>
-                        Account Settings
-                    </a>
-                    <a href="{% url 'logs_page' %}" class="dropdown-item">
-                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0z"/>
-                        </svg>
-                        My Activity
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a href="{% url 'logout' %}" class="dropdown-item dropdown-item-danger">
-                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
-                            <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
-                        </svg>
-                        Sign Out
-                    </a>
+                    <input type="text" class="search-input-inline" placeholder="Search forms..." id="searchInput">
                 </div>
             </div>
-        </div>        
- 
 
+            <!-- RIGHT SIDE: REPORTS + USER PROFILE -->
+            <div class="header-actions">
+                <!-- REPORTS DROPDOWN -->
+                <div class="reports-dropdown-container">
+                    <button class="btn-reports" id="reportsDropdownBtn" onclick="toggleReportsDropdown()">
+                        <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zM2.5 2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zM1 10.5A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z"/>
+                        </svg>
+                        <span>Reports</span>
+                        <svg class="dropdown-arrow-icon" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                        </svg>
+                    </button>
+                    
+                    <div class="reports-dropdown-menu" id="reportsDropdownMenu">
+                        <button class="reports-dropdown-item" onclick="exportToExcel(); event.stopPropagation();">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+                                <path d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z"/>
+                            </svg>
+                            <div class="reports-item-content">
+                                <div class="reports-item-title">Export to Excel</div>
+                                <div class="reports-item-subtitle">All forms including archived</div>
+                            </div>
+                        </button>
+                        
+                        <button class="reports-dropdown-item" onclick="exportToPDF(); event.stopPropagation();">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+                                <path fill-rule="evenodd" d="M4.603 14.087a.81.81 0 0 1-.438-.42c-.195-.388-.13-.776.08-1.102.198-.307.526-.568.897-.787a7.68 7.68 0 0 1 1.482-.645 19.697 19.697 0 0 0 1.062-2.227 7.269 7.269 0 0 1-.43-1.295c-.086-.4-.119-.796-.046-1.136.075-.354.274-.672.65-.823.192-.077.4-.12.602-.077a.7.7 0 0 1 .477.365c.088.164.12.356.127.538.007.188-.012.396-.047.614-.084.51-.27 1.134-.52 1.794a10.954 10.954 0 0 0 .98 1.686 5.753 5.753 0 0 1 1.334.05c.364.066.734.195.96.465.12.144.193.32.2.518.007.192-.047.382-.138.563a1.04 1.04 0 0 1-.354.416.856.856 0 0 1-.51.138c-.331-.014-.654-.196-.933-.417a5.712 5.712 0 0 1-.911-.95 11.651 11.651 0 0 0-1.997.406 11.307 11.307 0 0 1-1.02 1.51c-.292.35-.609.656-.927.787a.793.793 0 0 1-.58.029zm1.379-1.901c-.166.076-.32.156-.459.238-.328.194-.541.383-.647.547-.094.145-.096.25-.04.361.01.022.02.036.026.044a.266.266 0 0 0 .035-.012c.137-.056.355-.235.635-.572a8.18 8.18 0 0 0 .45-.606zm1.64-1.33a12.71 12.71 0 0 1 1.01-.193 11.744 11.744 0 0 1-.51-.858 20.801 20.801 0 0 1-.5 1.05zm2.446.45c.15.163.296.3.435.41.24.19.407.253.498.256a.107.107 0 0 0 .07-.015.307.307 0 0 0 .094-.125.436.436 0 0 0 .059-.2.095.095 0 0 0-.026-.063c-.052-.062-.2-.152-.518-.209a3.876 3.876 0 0 0-.612-.053zM8.078 7.8a6.7 6.7 0 0 0 .2-.828c.031-.188.043-.343.038-.465a.613.613 0 0 0-.032-.198.517.517 0 0 0-.145.04c-.087.035-.158.106-.196.283-.04.192-.03.469.046.822.024.111.054.227.09.346z"/>
+                            </svg>
+                            <div class="reports-item-content">
+                                <div class="reports-item-title">Export to PDF</div>
+                                <div class="reports-item-subtitle">Summary report with all forms</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- USER PROFILE HEADER -->
+                <div class="user-profile-header">
+                    <div class="user-info" onclick="toggleUserDropdown()">
+                        {% if user.is_authenticated %}
+                            <div class="user-avatar">
+                                {{ user.first_name.0|default:user.username.0|upper }}
+                            </div>
+                            <div class="user-details">
+                                <div class="user-name">{{ user.first_name|default:user.username }}</div>
+                                <div class="user-role">{{ user_role|default:"Librarian" }}</div>
+                            </div>
+                            <svg class="dropdown-icon" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                            </svg>
+                        {% endif %}
+                    </div>
+                    
 
-        <!-- Search Bar -->
-        <div class="search-bar">
-            <input type="text" class="search-input" placeholder="Value" id="searchInput">
-            <button class="filter-btn">⚙</button>
+                    <div class="user-dropdown-menu" id="userDropdownMenu">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name">{{ user.first_name|default:user.username }}</div>
+                            <div class="dropdown-user-email">{{ user.email }}</div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item" onclick="openSettingsModal(); return false;">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
+                                <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319z"/>
+                            </svg>
+                            Account Settings
+                        </a>
+                        <a href="{% url 'logs_page' %}" class="dropdown-item">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0z"/>
+                            </svg>
+                            My Activity
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'logout' %}" class="dropdown-item dropdown-item-danger">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+                                <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                            </svg>
+                            Sign Out
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
+
+
 
         <!-- Board -->
         <div class="board">
+            <!-- Awaiting Approval Column -->
+            <div class="column">
+                <div class="column-header">
+                    <div class="column-title-group">
+                        <div class="column-title">AWAITING APPROVAL</div>
+                        <div class="column-count">{{ awaiting_approval|length }}</div>
+                    </div>
+                </div>
+                <div class="drop-zone" data-status="awaiting_approval">
+                    {% for item in awaiting_approval %}
+                    <div class="card" draggable="false" data-id="{{ item.id }}">
+                        <div class="card-header">
+                            <div class="card-title">{{ item.name }}</div>
+                            <div class="card-menu" onclick="toggleCardMenu(event, {{ item.id }})">
+                                ⋯
+                                <div class="card-menu-dropdown" id="cardMenu{{ item.id }}">
+                                    <button class="card-menu-item menu-download" onclick="downloadForm({{ item.id }}); event.stopPropagation();">
+                                        <svg fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                                        </svg>
+                                        Download
+                                    </button>
+                                    <div class="card-menu-divider"></div>
+                                    <button class="card-menu-item menu-archive" onclick="archiveForm({{ item.id }}); event.stopPropagation();">
+                                        <svg fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M0 2a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1v7.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 12.5V5a1 1 0 0 1-1-1V2zm2 3v7.5A1.5 1.5 0 0 0 3.5 14h9a1.5 1.5 0 0 0 1.5-1.5V5H2zm13-3H1v2h14V2zM5 7.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+                                        </svg>
+                                        Archive
+                                    </button>
+                                    <div class="card-menu-divider"></div>
+                                    <button class="card-menu-item menu-delete" onclick="deleteForm({{ item.id }}); event.stopPropagation();">
+                                        <svg fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                        </svg>
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-info">
+                            <span>{{ item.description|truncatewords:5 }}</span>
+                        </div>
+                        <div class="card-info">
+                            <span>{{ item.student_no }}</span>
+                            <span>{{ item.program_year }}</span>
+                        </div>
+                        <div class="card-info">
+                            <span>{{ item.date }}</span>
+                            <span class="card-amount">₱{{ item.total }}</span>
+                        </div>
+                        {% if item.student_signed_at %}
+                        <div class="card-footer">
+                            <span class="card-badge-signed">✓ Signed by student</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
             <!-- In Progress Column -->
             <div class="column">
                 <div class="column-header">
@@ -84,14 +193,40 @@
                         <div class="column-title">IN PROGRESS</div>
                         <div class="column-count">{{ in_progress|length }}</div>
                     </div>
-                    <button class="add-card-btn" data-status="in_progress">+</button>
+                    <!-- <button class="add-card-btn" data-status="in_progress">+</button> -->
                 </div>
                 <div class="drop-zone" data-status="in_progress">
                     {% for item in in_progress %}
                     <div class="card" draggable="true" data-id="{{ item.id }}">
                         <div class="card-header">
                             <div class="card-title">{{ item.name }}</div>
-                            <div class="card-menu">⋯</div>
+                            <div class="card-menu" onclick="toggleCardMenu(event, {{ item.id }})">
+                                ⋯
+                                <div class="card-menu-dropdown" id="cardMenu{{ item.id }}">
+                                    <button class="card-menu-item menu-download" onclick="downloadForm({{ item.id }}); event.stopPropagation();">
+                                        <svg fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                                        </svg>
+                                        Download
+                                    </button>
+                                    <div class="card-menu-divider"></div>
+                                    <button class="card-menu-item menu-archive" onclick="archiveForm({{ item.id }}); event.stopPropagation();">
+                                        <svg fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M0 2a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1v7.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 12.5V5a1 1 0 0 1-1-1V2zm2 3v7.5A1.5 1.5 0 0 0 3.5 14h9a1.5 1.5 0 0 0 1.5-1.5V5H2zm13-3H1v2h14V2zM5 7.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+                                        </svg>
+                                        Archive
+                                    </button>
+                                    <div class="card-menu-divider"></div>
+                                    <button class="card-menu-item menu-delete" onclick="deleteForm({{ item.id }}); event.stopPropagation();">
+                                        <svg fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                        </svg>
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                         <div class="card-info">
                             <span>{{ item.description|truncatewords:5 }}</span>
@@ -116,24 +251,50 @@
                         <div class="column-title">DONE</div>
                         <div class="column-count">{{ done|length }}</div>
                     </div>
-                    <button class="add-card-btn" data-status="done">+</button>
+                    <!-- <button class="add-card-btn" data-status="done">+</button> -->
                 </div>
                 <div class="drop-zone" data-status="done">
                     {% for item in done %}
                     <div class="card" draggable="true" data-id="{{ item.id }}">
                         <div class="card-header">
                             <div class="card-title">{{ item.name }}</div>
-                            <div class="card-menu">⋯</div>
+                            <div class="card-menu" onclick="toggleCardMenu(event, {{ item.id }})">
+                                ⋯
+                                <div class="card-menu-dropdown" id="cardMenu{{ item.id }}">
+                                    <button class="card-menu-item menu-download" onclick="downloadForm({{ item.id }}); event.stopPropagation();">
+                                        <svg fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                                        </svg>
+                                        Download
+                                    </button>
+                                    <div class="card-menu-divider"></div>
+                                    <button class="card-menu-item menu-archive" onclick="archiveForm({{ item.id }}); event.stopPropagation();">
+                                        <svg fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M0 2a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1v7.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 12.5V5a1 1 0 0 1-1-1V2zm2 3v7.5A1.5 1.5 0 0 0 3.5 14h9a1.5 1.5 0 0 0 1.5-1.5V5H2zm13-3H1v2h14V2zM5 7.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+                                        </svg>
+                                        Archive
+                                    </button>
+                                    <div class="card-menu-divider"></div>
+                                    <button class="card-menu-item menu-delete" onclick="deleteForm({{ item.id }}); event.stopPropagation();">
+                                        <svg fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                        </svg>
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                         <div class="card-info">
-                            <span>📚 {{ item.description|truncatewords:5 }}</span>
+                            <span>{{ item.description|truncatewords:5 }}</span>
                         </div>
                         <div class="card-info">
-                            <span>🎓 {{ item.student_no }}</span>
+                            <span>{{ item.student_no }}</span>
                             <span>{{ item.program_year }}</span>
                         </div>
                         <div class="card-info">
-                            <span>📅 {{ item.date }}</span>
+                            <span>{{ item.date }}</span>
                             <span class="card-amount">₱{{ item.total }}</span>
                         </div>
                     </div>
@@ -142,9 +303,9 @@
             </div>
 
             <!-- Add New Column Button -->
-            <div class="add-column-container">
+            <!-- <div class="add-column-container">
                 <button class="add-column-btn">+</button>
-            </div>
+            </div> -->
         </div>
     </div>
 
@@ -188,25 +349,49 @@
 
                         <div class="form-group">
                             <label for="description_label">DESCRIPTION:</label>
-                            <div class="description-items" id="descriptionItems">
-                                <div class="description-item">
-                                    <input type="text" class="form-input description-input" placeholder="PRINTING - BLCK GRAPHICS" value="PRINTING - BLCK GRAPHICS">
-                                    <div class="quantity-controls">
-                                        <button type="button" class="qty-btn qty-minus">−</button>
-                                        <input type="number" class="qty-input" value="1" min="1">
-                                        <button type="button" class="qty-btn qty-plus">+</button>
-                                    </div>
-                                    <input type="number" class="form-input amount-input" placeholder="₱5" value="5" step="0.01">
-                                    <button type="button" class="btn-remove-item">×</button>
+                            
+                            <!-- Selected Items List -->
+                            <div class="selected-fees-list" id="selectedFeesList">
+                                <!-- Items will be added here dynamically -->
+                            </div>
+                            
+                            <!-- Add Item Button -->
+                            <button type="button" class="btn-add-fee-item" id="btnAddFeeItem">
+                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                </svg>
+                                Add Item
+                            </button>
+                        </div>
+
+                        <!-- Fee Selector Modal -->
+                        <div class="fee-selector-overlay" id="feeSelectorOverlay">
+                            <div class="fee-selector-modal">
+                                <div class="fee-selector-header">
+                                    <h3>Select Fees</h3>
+                                    <button type="button" class="fee-selector-close" id="closeFeeSelector">&times;</button>
+                                </div>
+                                
+                                <div class="fee-selector-search">
+                                    <input type="text" id="feeSearchInput" placeholder="Search fees..." class="fee-search-input">
+                                </div>
+                                
+                                <div class="fee-selector-body" id="feeSelectorBody">
+                                    <!-- Fee items will be loaded here -->
+                                </div>
+                                
+                                <div class="fee-selector-footer">
+                                    <button type="button" class="btn-cancel-fees" id="cancelFeeSelection">Cancel</button>
+                                    <button type="button" class="btn-add-fees" id="confirmFeeSelection">Add Selected</button>
                                 </div>
                             </div>
-                            <button type="button" class="btn-add-item" id="addDescriptionItem">+ Add Item</button>
                         </div>
 
                         <div class="signature-section">
                             <div class="signature-group">
                                 <label for="charged_by">CHARGED BY:</label>
                                 <div class="charged-by-name">{{ request.user.first_name|upper }}</div>
+                                <div class="signature-placeholder"></div>
                                 <input type="hidden" id="charged_by" name="charged_by" value="{{ request.user.first_name }}">
                                 <div class="signature-line"></div>
                             </div>
@@ -235,14 +420,14 @@
                             </div>
                             <div class="amount-breakdown" id="amountBreakdown">
                                 <div class="amount-item">
-                                    <span>PRINTING - BLCK GRAPHICS(5)</span>
-                                    <span>₱5</span>
+                                    <span>No items</span>
+                                    <span>₱0.00</span>
                                 </div>
                             </div>
                             <div class="summary-divider"></div>
                             <div class="summary-row summary-total">
                                 <span class="summary-label">TOTAL:</span>
-                                <span class="summary-value-total" id="totalAmount">₱25.00</span>
+                                <span class="summary-value-total" id="totalAmount">₱0.00</span>
                             </div>
                         </div>
 
@@ -256,5 +441,6 @@
     </div>
 
     <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/billing_autocomplete.js' %}"></script>
 </body>
 </html>

@@ -1,0 +1,275 @@
+<!-- frontend/templates/students.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management - Mapua Library</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/students.css' %}">
+</head>
+<body>
+    <!-- Include Sidebar -->
+    {% include 'includes/sidebar.html' %}
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="page-header">
+            <div>
+                <h1>Student Management</h1>
+                <p class="page-subtitle">Manage enrolled student records</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-import" id="importStudentsBtn">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                        <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+                    </svg>
+                    Import Excel
+                </button>
+                <button class="btn-add-student" id="addStudentBtn">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                    </svg>
+                    Add Student
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon total-icon">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816zM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275zM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Total Students</div>
+                    <div class="stat-value" id="totalStudents">{{ students|length }}</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon program-icon">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"/>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Programs</div>
+                    <div class="stat-value" id="totalPrograms">-</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon ay-icon">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M4 .5a.5.5 0 0 0-1 0V1H2a2 2 0 0 0-2 2v1h16V3a2 2 0 0 0-2-2h-1V.5a.5.5 0 0 0-1 0V1H4V.5zM16 14V5H0v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2zm-3.5-7h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5z"/>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Academic Year</div>
+                    <div class="stat-value stat-value-small" id="currentAY">2025-2026</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="search-filters">
+            <div class="search-box">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                </svg>
+                <input type="text" id="searchInput" placeholder="Search by student number or name...">
+            </div>
+            <div class="filter-controls">
+                <select id="filterProgram" class="filter-select">
+                    <option value="">All Programs</option>
+                </select>
+                <select id="filterTerm" class="filter-select">
+                    <option value="">All Terms</option>
+                    <option value="1st">1st Semester</option>
+                    <option value="2nd">2nd Semester</option>
+                    <option value="Summer">Summer</option>
+                </select>
+                <select id="filterAY" class="filter-select">
+                    <option value="">All Academic Years</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Students Table -->
+        <div class="students-container">
+            <table class="students-table">
+                <thead>
+                    <tr>
+                        <th>Student Number</th>
+                        <th>Name</th>
+                        <th>Program</th>
+                        <th>Term</th>
+                        <th>Academic Year</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="studentsTableBody">
+                    {% for student in students %}
+                    <tr data-student-id="{{ student.student_no }}">
+                        <td><strong>{{ student.student_no }}</strong></td>
+                        <td>{{ student.name }}</td>
+                        <td>{{ student.program }}</td>
+                        <td>{{ student.term }}</td>
+                        <td>{{ student.academic_year }}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-action btn-edit" onclick="editStudent('{{ student.student_no }}', '{{ student.name }}', '{{ student.program }}', '{{ student.term }}', '{{ student.academic_year }}')" title="Edit">
+                                    <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10z"/>
+                                    </svg>
+                                </button>
+                                <button class="btn-action btn-delete" onclick="deleteStudent('{{ student.student_no }}', '{{ student.name }}')" title="Delete">
+                                    <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <svg width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022z"/>
+                            </svg>
+                            <p>No students found</p>
+                            <small>Import an Excel file or add students manually</small>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Import Excel Modal -->
+    <div class="modal-overlay" id="importModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Import Students from Excel</h2>
+                <button class="modal-close" onclick="closeModal('importModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="import-instructions">
+                    <h3>📋 Excel File Requirements:</h3>
+                    <ul>
+                        <li>File must be .xlsx or .xls format</li>
+                        <li>First row should be headers</li>
+                        <li>Required columns: <strong>Student Number, Name, Program, Term, Academic Year</strong></li>
+                    </ul>
+                    <div class="example-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Student Number</th>
+                                    <th>Name</th>
+                                    <th>Program</th>
+                                    <th>Term</th>
+                                    <th>Academic Year</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2020123456</td>
+                                    <td>DELA CRUZ, JUAN M.</td>
+                                    <td>BSCS</td>
+                                    <td>1st</td>
+                                    <td>2025-2026</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <form id="importForm" enctype="multipart/form-data">
+                    <div class="upload-area" id="uploadArea">
+                        <svg width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+                        </svg>
+                        <p>Drag & drop Excel file here</p>
+                        <p class="upload-or">or</p>
+                        <input type="file" id="excelFile" accept=".xlsx,.xls" hidden>
+                        <button type="button" class="btn-browse" onclick="document.getElementById('excelFile').click()">Browse Files</button>
+                        <small id="fileName"></small>
+                    </div>
+
+                    <div id="importPreview" class="import-preview" style="display: none;">
+                        <h3>Preview:</h3>
+                        <div id="previewTable"></div>
+                        <p class="preview-info">
+                            Found <strong id="previewCount">0</strong> students to import
+                        </p>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel" onclick="closeModal('importModal')">Cancel</button>
+                        <button type="submit" class="btn-submit" id="importSubmitBtn" disabled>Import Students</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Student Modal -->
+    <div class="modal-overlay" id="studentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="studentModalTitle">Add Student</h2>
+                <button class="modal-close" onclick="closeModal('studentModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="studentForm">
+                    <input type="hidden" id="originalStudentNo">
+                    <div class="form-group">
+                        <label>Student Number *</label>
+                        <input type="text" id="studentNo" class="form-input" required placeholder="e.g., 2020123456" pattern="[0-9]{10}">
+                        <small>10-digit student number</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Name *</label>
+                        <input type="text" id="studentName" class="form-input" required placeholder="LAST NAME, FIRST NAME M.I.">
+                        <small>Format: LAST NAME, FIRST NAME M.I.</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Program *</label>
+                        <input type="text" id="studentProgram" class="form-input" required placeholder="e.g., BSCS">
+                    </div>
+                    <div class="form-group">
+                        <label>Term *</label>
+                        <select id="studentTerm" class="form-input" required>
+                            <option value="">Select Term</option>
+                            <option value="1st">1st Semester</option>
+                            <option value="2nd">2nd Semester</option>
+                            <option value="Summer">Summer</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Academic Year *</label>
+                        <input type="text" id="studentAY" class="form-input" required placeholder="e.g., 2025-2026" value="2025-2026">
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel" onclick="closeModal('studentModal')">Cancel</button>
+                        <button type="submit" class="btn-submit" id="studentSubmitBtn">Save Student</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="{% static 'js/students.js' %}"></script>
+</body>
+</html>

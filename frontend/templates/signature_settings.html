@@ -1,0 +1,118 @@
+<!-- frontend/templates/signature_settings.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signature Settings - Mapua Library</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/signature_settings.css' %}">
+</head>
+<body>
+    <!-- Include Sidebar -->
+    {% include 'includes/sidebar.html' %}
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-header">
+            <div>
+                <h1>My Signature</h1>
+                <p class="page-subtitle">Manage your digital signature for billing forms</p>
+            </div>
+        </div>
+
+        <div class="signature-settings-container">
+            <!-- Current Signature Display -->
+            <div class="signature-card">
+                <div class="card-header">
+                    <h2>Current Signature</h2>
+                    {% if has_signature %}
+                    <span class="status-badge status-active">✓ Active</span>
+                    {% else %}
+                    <span class="status-badge status-inactive">No Signature</span>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if has_signature %}
+                    <div class="signature-preview-box">
+                        <img src="{{ current_signature }}" alt="Current Signature" class="signature-preview-img">
+                    </div>
+                    <p class="signature-info">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                        </svg>
+                        This signature will automatically appear on all billing forms you create.
+                    </p>
+                    <button class="btn-change-signature" onclick="showSignaturePad()">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10z"/>
+                        </svg>
+                        Change Signature
+                    </button>
+                    {% else %}
+                    <div class="no-signature-box">
+                        <svg width="64" height="64" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                        </svg>
+                        <h3>No Signature Set</h3>
+                        <p>Create your digital signature to use on billing forms</p>
+                        <button class="btn-create-signature" onclick="showSignaturePad()">
+                            Create Signature
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Signature Editor (Hidden by default) -->
+            <div class="signature-editor" id="signatureEditor" style="display: none;">
+                <div class="editor-header">
+                    <h2>Draw Your Signature</h2>
+                    <button class="btn-close-editor" onclick="hideSignaturePad()">&times;</button>
+                </div>
+                <div class="editor-body">
+                    <div class="signature-canvas-container">
+                        <canvas id="signatureCanvas" width="600" height="200"></canvas>
+                    </div>
+                    <div class="editor-controls">
+                        <button class="btn-clear" onclick="clearSignature()">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                            </svg>
+                            Clear
+                        </button>
+                        <button class="btn-save-signature" onclick="saveSignature()">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
+                            </svg>
+                            Save Signature
+                        </button>
+                    </div>
+                    <p class="editor-hint">
+                        💡 Tip: Sign naturally, as you would on paper. Your signature will be automatically resized and optimized.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Usage Information -->
+            <div class="info-card">
+                <h3>
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                    </svg>
+                    How It Works
+                </h3>
+                <ul class="info-list">
+                    <li>✓ Your signature is securely stored and linked to your account</li>
+                    <li>✓ It will automatically appear in the "CHARGED BY" section of billing forms</li>
+                    <li>✓ You can update or change your signature anytime</li>
+                    <li>✓ Your signature is compressed and optimized for fast loading</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/signature_settings.js' %}"></script>
+</body>
+</html>
